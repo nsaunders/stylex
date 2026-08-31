@@ -8,6 +8,7 @@
 import type { ReactNode } from 'react';
 import { baseOptions } from '@/lib/layout.shared';
 import { HomeLayout } from '@/components/layout/home';
+import '@/styles/globals.css';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (

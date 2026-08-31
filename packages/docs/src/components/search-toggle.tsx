@@ -9,15 +9,16 @@
 import { Search } from 'lucide-react';
 import { useSearchContext } from 'fumadocs-ui/contexts/search';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
-import { type StyleXComponentProps } from './layout/shared';
-import * as stylex from '@stylexjs/stylex';
-import { vars } from '@/theming/vars.stylex';
+import { on, or } from '@/css';
+import type { ComponentProps } from 'react';
+import { pipe } from 'remeda';
 
 export function LargeSearchToggle({
   hideIfDisabled,
-  xstyle,
+  className,
+  style,
   ...props
-}: StyleXComponentProps<'button'> & {
+}: ComponentProps<'button'> & {
   hideIfDisabled?: boolean;
 }) {
   const { enabled, hotKey, setOpenSearch } = useSearchContext();
@@ -26,19 +27,74 @@ export function LargeSearchToggle({
 
   return (
     <button
+      className={className}
       data-search-full=""
       type="button"
       {...props}
       onClick={() => {
         setOpenSearch(true);
       }}
-      {...stylex.props(styles.button, xstyle)}
+      style={{
+        ...pipe(
+          {
+            // '  text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground'
+            display: 'inline-flex',
+            gap: 2 * 4,
+            alignItems: 'center',
+            width: '100%',
+            minWidth: 90,
+            padding: 1.5 * 4,
+            paddingInlineStart: 2.5 * 4,
+
+            fontSize: `${14 / 16}rem`,
+            color: 'var(--color-fd-muted-foreground)',
+            outline: 'none',
+
+            backgroundColor: 'transparent',
+            borderColor: 'var(--color-fd-border)',
+            borderStyle: 'solid',
+            borderWidth: 1,
+            borderRadius: '9999px',
+            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+
+            transitionDuration: '150ms',
+            transitionProperty: 'color, background-color, border-color',
+          },
+          on(or('&:hover', '&:focus-visible'), {
+            color: 'var(--color-fd-foreground)',
+            backgroundColor:
+              'color-mix(in oklab, var(--color-fd-primary) 5%, transparent)',
+            borderColor: 'var(--color-fd-primary)',
+          }),
+        ),
+        ...style,
+      }}
     >
-      <Search {...stylex.props(styles.size4)} />
-      <span {...stylex.props(styles.text)}>{text.search}</span>
-      <div {...stylex.props(styles.hotkeyContainer)}>
+      <Search style={{ width: 16, height: 16 }} />
+      <span
+        style={pipe({}, on('@container (width < 240px)', { display: 'none' }))}
+      >
+        {text.search}
+      </span>
+      <div
+        style={{
+          display: 'inline-flex',
+          gap: 0.5 * 4,
+          marginInlineStart: 'auto',
+        }}
+      >
         {hotKey.map((k, i) => (
-          <kbd key={i} {...stylex.props(styles.hotkey)}>
+          <kbd
+            key={i}
+            style={{
+              paddingInline: 1.5 * 4,
+              backgroundColor: 'var(--color-fd-background)',
+              borderColor: 'var(--color-fd-border)',
+              borderStyle: 'solid',
+              borderWidth: 1,
+              borderRadius: 8,
+            }}
+          >
             {k.display}
           </kbd>
         ))}
@@ -46,62 +102,3 @@ export function LargeSearchToggle({
     </button>
   );
 }
-
-const styles = stylex.create({
-  button: {
-    // '  text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground'
-    display: 'inline-flex',
-    gap: 2 * 4,
-    alignItems: 'center',
-    width: '100%',
-    minWidth: 90,
-    padding: 1.5 * 4,
-    paddingInlineStart: 2.5 * 4,
-
-    fontSize: `${14 / 16}rem`,
-    color: {
-      default: vars['--color-fd-muted-foreground'],
-      ':focus-visible': vars['--color-fd-foreground'],
-      ':hover': vars['--color-fd-foreground'],
-    },
-    outline: 'none',
-
-    backgroundColor: {
-      default: 'transparent',
-      ':focus-visible': `color-mix(in oklab, ${vars['--color-fd-primary']} 5%, transparent)`,
-      ':hover': `color-mix(in oklab, ${vars['--color-fd-primary']} 5%, transparent)`,
-    },
-    borderColor: {
-      default: vars['--color-fd-border'],
-      ':focus-visible': vars['--color-fd-primary'],
-      ':hover': vars['--color-fd-primary'],
-    },
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: '9999px',
-    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-
-    transitionDuration: '150ms',
-    transitionProperty: 'color, background-color, border-color',
-  },
-  text: {
-    display: {
-      default: null,
-      '@container (width < 240px)': 'none',
-    },
-  },
-  size4: { width: 16, height: 16 },
-  hotkeyContainer: {
-    display: 'inline-flex',
-    gap: 0.5 * 4,
-    marginInlineStart: 'auto',
-  },
-  hotkey: {
-    paddingInline: 1.5 * 4,
-    backgroundColor: vars['--color-fd-background'],
-    borderColor: vars['--color-fd-border'],
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-});

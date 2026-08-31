@@ -4,15 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as stylex from '@stylexjs/stylex';
+import type { CSSProperties } from 'react';
 
 export default function MetaOpenSource({
-  xstyle,
+  className,
+  style,
 }: {
-  xstyle: stylex.StyleXStyles;
+  className?: string;
+  style?: CSSProperties;
 }) {
   return (
-    <svg viewBox="0 0 6090.9521 1307.1739" {...stylex.props(xstyle)}>
+    <svg className={className} style={style} viewBox="0 0 6090.9521 1307.1739">
       <linearGradient
         gradientUnits="userSpaceOnUse"
         id="a"

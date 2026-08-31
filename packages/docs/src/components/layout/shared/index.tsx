@@ -128,7 +128,7 @@ export interface MenuItemType extends Partial<BaseLinkType> {
         /**
          * Options when displayed on navigation menu
          */
-        menu?: StyleXAttributes<HTMLElement> & {
+        menu?: Omit<ComponentProps<'a'>, 'href'> & {
           banner?: ReactNode;
         };
       })

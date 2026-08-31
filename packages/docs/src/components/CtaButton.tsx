@@ -5,26 +5,69 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as React from 'react';
-import * as stylex from '@stylexjs/stylex';
+import type { ReactNode } from 'react';
+import { pipe } from 'remeda';
 import { Link } from 'waku';
-import { vars } from '../theming/vars.stylex';
+import { and, not, on, or } from '@/css';
 
 export default function CtaButton({
   children,
   color,
   to,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   color: 'pink' | 'blue';
   to: string;
 }) {
+  const pinkClassName = 'a';
+  const pink = `&.${pinkClassName}` satisfies Parameters<typeof on>[0];
+  const blue = not(pink);
+
   return (
     <Link
-      {...stylex.props(
-        styles.base,
-        color === 'pink' && styles.pink,
-        color === 'blue' && styles.blue,
+      className={color === 'pink' ? pinkClassName : undefined}
+      style={pipe(
+        {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingBlock: '1rem',
+          paddingInline: '2rem',
+          fontWeight: 400,
+          whiteSpace: 'nowrap',
+          color: 'var(--color-fd-background)',
+          textDecoration: 'none',
+          backgroundColor: 'var(--color-fd-accent-foreground)',
+          borderColor: 'var(--color-fd-accent-foreground)',
+          borderStyle: 'solid',
+          borderWidth: 2,
+          borderRadius: 10,
+          scale: '1',
+          transitionDuration: '0.2s',
+          transitionProperty: 'scale, color, background-color',
+        },
+        on(pink, {
+          backgroundColor: 'var(--color-fd-primary)',
+          borderColor: 'var(--color-fd-primary)',
+        }),
+        on(and(blue, or('&:hover', '&:focus-visible')), {
+          color: 'var(--color-fd-accent-foreground)',
+          backgroundColor:
+            'color-mix(in srgb, var(--color-fd-accent-foreground) 10%, transparent)',
+        }),
+        on(and(pink, or('&:hover', '&:focus-visible')), {
+          color: 'var(--color-fd-primary)',
+          backgroundColor:
+            'color-mix(in srgb, var(--color-fd-primary) 10%, transparent)',
+        }),
+        on('&:hover', {
+          textDecoration: 'none',
+          scale: '1.02',
+        }),
+        on('&:active', {
+          scale: '0.98',
+          transitionDuration: '0.05s',
+        }),
       )}
       to={to}
     >
@@ -32,60 +75,3 @@ export default function CtaButton({
     </Link>
   );
 }
-const styles = stylex.create({
-  base: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBlock: '1rem',
-    paddingInline: '2rem',
-    fontWeight: 400,
-    whiteSpace: 'nowrap',
-    // color: vars['--color-fd-background'],
-    textDecoration: {
-      default: 'none',
-      ':hover': 'none',
-    },
-    backgroundColor: 'transparent',
-    borderColor: 'currentColor',
-    borderStyle: 'solid',
-    borderWidth: 2,
-    borderRadius: 10,
-    scale: {
-      default: '1',
-      ':hover': '1.02',
-      ':active': '0.98',
-    },
-    transitionDuration: {
-      default: '0.2s',
-      ':active': '0.05s',
-    },
-    transitionProperty: 'scale, color, background-color',
-  },
-  pink: {
-    color: {
-      default: vars['--color-fd-background'],
-      ':focus-visible': vars['--color-fd-primary'],
-      ':hover': vars['--color-fd-primary'],
-    },
-    backgroundColor: {
-      default: vars['--color-fd-primary'],
-      ':focus-visible': `color-mix(in srgb, ${vars['--color-fd-primary']} 10%, transparent)`,
-      ':hover': `color-mix(in srgb, ${vars['--color-fd-primary']} 10%, transparent)`,
-    },
-    borderColor: vars['--color-fd-primary'],
-  },
-  blue: {
-    color: {
-      default: vars['--color-fd-background'],
-      ':focus-visible': vars['--color-fd-accent-foreground'],
-      ':hover': vars['--color-fd-accent-foreground'],
-    },
-    backgroundColor: {
-      default: vars['--color-fd-accent-foreground'],
-      ':focus-visible': `color-mix(in srgb, ${vars['--color-fd-accent-foreground']} 10%, transparent)`,
-      ':hover': `color-mix(in srgb, ${vars['--color-fd-accent-foreground']} 10%, transparent)`,
-    },
-    borderColor: vars['--color-fd-accent-foreground'],
-  },
-});

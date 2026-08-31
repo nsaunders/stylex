@@ -6,7 +6,6 @@
  */
 import type { ReactNode } from 'react';
 import { Provider } from '@/components/provider';
-import '@/styles/globals.css';
 import DevStyleXHMR from '@/components/DevStyleXHMR';
 import { SidebarProvider } from '@/contexts/SidebarContext';
 import coverImageUrl from '@/static/img/stylex-cover-photo.png';

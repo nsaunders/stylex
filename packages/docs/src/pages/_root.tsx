@@ -6,6 +6,7 @@
  */
 import type { ReactNode } from 'react';
 import { SiteErrorBoundary } from '@/components/SiteErrorBoundary';
+import { styleSheet } from '@/css';
 
 // Backport Waku's version-skew recovery while the site is on v1.0.0-alpha.0.
 // https://github.com/wakujs/waku/pull/2240
@@ -55,6 +56,7 @@ export default function RootElement({ children }: { children: ReactNode }) {
     <SiteErrorBoundary>
       <html lang="en">
         <head>
+          <style dangerouslySetInnerHTML={{ __html: styleSheet() }} />
           <script>{VERSION_SKEW_RECOVERY_SCRIPT}</script>
         </head>
         <body>{children}</body>

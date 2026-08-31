@@ -17,7 +17,6 @@ import {
   useEffectEvent,
 } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import * as stylex from '@stylexjs/stylex';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import { ChevronRight, Hash, Search } from 'lucide-react';
 import { useRouter } from 'waku';
@@ -33,7 +32,8 @@ import type {
   SharedProps,
   TagItem,
 } from 'fumadocs-ui/contexts/search';
-import { ANIMATION_DURATIONS, EASINGS, vars } from '@/theming/vars.stylex';
+import { animationNames, on, or } from '@/css';
+import { pipe } from 'remeda';
 
 type SearchItem =
   | (ReactSortedResult & { external?: boolean })
@@ -407,36 +407,159 @@ export function SearchDialog({
   }, [activeId]);
 
   const showFooter = tags.length > 0 || footer != null;
+  const activeClassName = 'a';
+  const activeCondition = `&.${activeClassName}` satisfies Parameters<
+    typeof on
+  >[0];
+  const strongClassName = 'b';
+  const strong = `&.${strongClassName}` satisfies Parameters<typeof on>[0];
+  const mutedClassName = 'c';
+  const muted = `&.${mutedClassName}` satisfies Parameters<typeof on>[0];
 
   return (
     <Dialog.Root onOpenChange={onOpenChange} open={open}>
       <Dialog.Portal>
-        <Dialog.Overlay {...stylex.props(styles.overlay)} />
-        <Dialog.Content {...stylex.props(styles.content)}>
-          <div {...stylex.props(styles.bgBlurContainer)}>
-            <div {...stylex.props(styles.bgBlur)} />
+        <Dialog.Overlay
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 50,
+            backgroundColor: 'var(--color-fd-overlay)',
+            backdropFilter: 'blur(4px)',
+          }}
+        />
+        <Dialog.Content
+          style={pipe(
+            {
+              position: 'fixed',
+              top: 16,
+              left: '50%',
+              zIndex: 51,
+              width: 'calc(100% - 16px)',
+              maxWidth: 640,
+              overflow: 'hidden',
+              color: 'var(--color-fd-popover-foreground)',
+              backgroundColor:
+                'color-mix(in oklab, var(--color-fd-popover) 35%, transparent)',
+              borderColor: 'var(--color-fd-border)',
+              borderStyle: 'solid',
+              borderWidth: 1,
+              borderRadius: 12,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              transform: 'translateX(-50%)',
+              animationDuration: '300ms',
+              animationTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            },
+            on('&:where([data-state=closed])', {
+              animationName: animationNames.searchDialogOut,
+            }),
+            on('&:where([data-state=open])', {
+              animationName: animationNames.searchDialogIn,
+            }),
+            on('@media (min-width: 768px)', { top: 'calc(50% - 250px)' }),
+          )}
+        >
+          <div style={{ position: 'absolute', inset: 0, overflow: 'clip' }}>
+            <div
+              style={{
+                position: 'absolute',
+                inset: -64,
+                backdropFilter: 'blur(48px) saturate(400%)',
+              }}
+            />
           </div>
-          <Dialog.Title {...stylex.props(styles.visuallyHidden)}>
+          <Dialog.Title
+            style={{
+              position: 'absolute',
+              width: 1,
+              height: 1,
+              padding: 0,
+              margin: -1,
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              borderWidth: 0,
+              clip: 'rect(0, 0, 0, 0)',
+            }}
+          >
             {text.search}
           </Dialog.Title>
-          <div {...stylex.props(styles.header)}>
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              gap: 8,
+              alignItems: 'center',
+              padding: 12,
+              borderBottomColor: 'var(--color-fd-border)',
+              borderBottomStyle: 'solid',
+              borderBottomWidth: 1,
+            }}
+          >
             <Search
-              {...stylex.props(
-                styles.searchIcon,
-                query.isLoading && styles.searchIconLoading,
+              className={query.isLoading ? activeClassName : undefined}
+              style={pipe(
+                {
+                  width: 20,
+                  height: 20,
+                  color: 'var(--color-fd-muted-foreground)',
+                },
+                on(activeCondition, {
+                  animationName: animationNames.searchPulse,
+                  animationDuration: '2s',
+                  animationTimingFunction: 'cubic-bezier(0.4, 0, 0.6, 1)',
+                  animationIterationCount: 'infinite',
+                }),
               )}
             />
             <input
-              {...stylex.props(styles.input)}
               autoFocus
               onChange={(event) => setSearch(event.target.value)}
               placeholder={text.search}
+              style={pipe(
+                {
+                  flexGrow: 1,
+                  minWidth: 0,
+                  fontSize: `${18 / 16}rem`,
+                  color: 'var(--color-fd-popover-foreground)',
+                  outline: 'none',
+                  backgroundColor: 'transparent',
+                  borderWidth: 0,
+                },
+                on('&::placeholder', {
+                  color: 'var(--color-fd-muted-foreground)',
+                }),
+              )}
               value={search}
             />
             <button
               onClick={() => onOpenChange(false)}
+              style={pipe(
+                {
+                  paddingBlock: 2,
+                  paddingInline: 6,
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: `${12 / 16}rem`,
+                  color: 'var(--color-fd-muted-foreground)',
+                  outline: 'none',
+                  backgroundColor: 'var(--color-fd-background)',
+                  borderColor: 'var(--color-fd-border)',
+                  borderStyle: 'solid',
+                  borderWidth: 1,
+                  borderRadius: 6,
+                  transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                  transitionDuration: '150ms',
+                  transitionProperty: 'color, background-color, border-color',
+                },
+                on(or('&:focus-visible', '&:hover'), {
+                  borderColor: 'var(--color-fd-primary)',
+                }),
+                on('&:hover', {
+                  color: 'var(--color-fd-accent-foreground)',
+                  backgroundColor:
+                    'color-mix(in oklab, var(--color-fd-accent) 80%, transparent)',
+                }),
+              )}
               type="button"
-              {...stylex.props(styles.closeButton)}
             >
               ESC
             </button>
@@ -444,17 +567,39 @@ export function SearchDialog({
           <div
             data-empty={items == null}
             ref={listContainerRef}
-            {...stylex.props(styles.listContainer)}
+            style={{
+              position: 'relative',
+              '--fd-animated-height': '0px',
+              height: 'var(--fd-animated-height)',
+              overflow: 'hidden',
+              transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+              transitionDuration: '150ms',
+              transitionProperty: 'height',
+            }}
           >
             <div
+              className={items == null ? activeClassName : undefined}
               ref={listViewportRef}
-              {...stylex.props(
-                styles.listViewport,
-                items == null && styles.listViewportHidden,
+              style={pipe(
+                {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  maxHeight: 460,
+                  padding: 4,
+                  overflowY: 'auto',
+                },
+                on(activeCondition, { display: 'none' }),
               )}
             >
               {items && items.length === 0 && (
-                <div {...stylex.props(styles.emptyState)}>
+                <div
+                  style={{
+                    paddingBlock: 48,
+                    fontSize: `${14 / 16}rem`,
+                    color: 'var(--color-fd-muted-foreground)',
+                    textAlign: 'center',
+                  }}
+                >
                   <I18nLabel label="searchNoResult" />
                 </div>
               )}
@@ -464,15 +609,42 @@ export function SearchDialog({
                   return (
                     <button
                       aria-selected={active}
+                      className={active ? activeClassName : undefined}
                       data-search-item={item.id}
                       key={item.id}
                       onClick={() => onOpenItem(item)}
                       onPointerMove={() => setActiveId(item.id)}
-                      type="button"
-                      {...stylex.props(
-                        styles.itemButton,
-                        active && styles.itemButtonActive,
+                      style={pipe(
+                        {
+                          position: 'relative',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 2,
+                          alignItems: 'flex-start',
+                          width: '100%',
+                          paddingBlock: 8,
+                          paddingInline: 10,
+                          fontSize: `${14 / 16}rem`,
+                          color: 'var(--color-fd-popover-foreground)',
+                          textAlign: 'start',
+                          backgroundColor: 'transparent',
+                          borderRadius: 8,
+                          transitionTimingFunction:
+                            'cubic-bezier(0.4, 0, 0.2, 1)',
+                          transitionDuration: '150ms',
+                          transitionProperty: 'background-color, color',
+                        },
+                        on('&:hover', {
+                          backgroundColor:
+                            'color-mix(in oklab, var(--color-fd-accent) 45%, transparent)',
+                        }),
+                        on(activeCondition, {
+                          color: 'var(--color-fd-accent-foreground)',
+                          backgroundColor:
+                            'color-mix(in oklab, var(--color-fd-accent) 45%, transparent)',
+                        }),
                       )}
+                      type="button"
                     >
                       {item.node}
                     </button>
@@ -486,23 +658,62 @@ export function SearchDialog({
                 return (
                   <button
                     aria-selected={active}
+                    className={active ? activeClassName : undefined}
                     data-search-item={item.id}
                     key={item.id}
                     onClick={() => onOpenItem(item)}
                     onPointerMove={() => setActiveId(item.id)}
-                    type="button"
-                    {...stylex.props(
-                      styles.itemButton,
-                      active && styles.itemButtonActive,
+                    style={pipe(
+                      {
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        alignItems: 'flex-start',
+                        width: '100%',
+                        paddingBlock: 8,
+                        paddingInline: 10,
+                        fontSize: `${14 / 16}rem`,
+                        color: 'var(--color-fd-popover-foreground)',
+                        textAlign: 'start',
+                        backgroundColor: 'transparent',
+                        borderRadius: 8,
+                        transitionTimingFunction:
+                          'cubic-bezier(0.4, 0, 0.2, 1)',
+                        transitionDuration: '150ms',
+                        transitionProperty: 'background-color, color',
+                      },
+                      on('&:hover', {
+                        backgroundColor:
+                          'color-mix(in oklab, var(--color-fd-accent) 45%, transparent)',
+                      }),
+                      on(activeCondition, {
+                        color: 'var(--color-fd-accent-foreground)',
+                        backgroundColor:
+                          'color-mix(in oklab, var(--color-fd-accent) 45%, transparent)',
+                      }),
                     )}
+                    type="button"
                   >
                     {item.breadcrumbs?.length ? (
-                      <div {...stylex.props(styles.breadcrumbs)}>
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          gap: 4,
+                          alignItems: 'center',
+                          fontSize: `${10 / 16}rem`,
+                          color: 'var(--color-fd-muted-foreground)',
+                        }}
+                      >
                         {item.breadcrumbs.map((crumb, index) => (
                           <Fragment key={index}>
                             {index > 0 && (
                               <ChevronRight
-                                {...stylex.props(styles.breadcrumbIcon)}
+                                style={{
+                                  width: 16,
+                                  height: 16,
+                                  color: 'var(--color-fd-muted-foreground)',
+                                }}
                               />
                             )}
                             {crumb}
@@ -511,16 +722,37 @@ export function SearchDialog({
                       </div>
                     ) : null}
                     <p
-                      {...stylex.props(
-                        styles.itemContent,
-                        item.type !== 'page' && styles.itemContentIndented,
+                      className={
                         item.type === 'page' || item.type === 'heading'
-                          ? styles.itemContentStrong
-                          : styles.itemContentMuted,
+                          ? strongClassName
+                          : mutedClassName
+                      }
+                      style={pipe(
+                        {
+                          display: 'block',
+                          width: '100%',
+                          minWidth: 0,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          color: 'var(--color-fd-foreground)',
+                          whiteSpace: 'nowrap',
+                        },
+                        on(strong, { fontWeight: 500 }),
+                        on(muted, {
+                          color:
+                            'color-mix(in oklab, var(--color-fd-popover-foreground) 80%, transparent)',
+                        }),
                       )}
                     >
                       {item.type === 'heading' && (
-                        <Hash {...stylex.props(styles.hashIcon)} />
+                        <Hash
+                          style={{
+                            width: 16,
+                            height: 16,
+                            marginInlineEnd: 4,
+                            color: 'var(--color-fd-muted-foreground)',
+                          }}
+                        />
                       )}
                       {content}
                     </p>
@@ -530,24 +762,64 @@ export function SearchDialog({
             </div>
           </div>
           {showFooter && (
-            <div {...stylex.props(styles.footer)}>
+            <div
+              style={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                padding: 12,
+                backgroundColor:
+                  'color-mix(in oklab, var(--color-fd-secondary) 50%, transparent)',
+              }}
+            >
               {tags.length > 0 && (
-                <div {...stylex.props(styles.tagList)}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 4,
+                    alignItems: 'center',
+                  }}
+                >
                   {tags.map((tagItem) => {
                     const isActive = tagItem.value === tag;
                     return (
                       <button
+                        className={isActive ? activeClassName : undefined}
                         key={tagItem.value}
                         onClick={() =>
                           setTag(
                             isActive && allowClear ? undefined : tagItem.value,
                           )
                         }
-                        type="button"
-                        {...stylex.props(
-                          styles.tagButton,
-                          isActive && styles.tagButtonActive,
+                        style={pipe(
+                          {
+                            paddingBlock: 2,
+                            paddingInline: 8,
+                            fontSize: `${12 / 16}rem`,
+                            fontWeight: 500,
+                            color: 'var(--color-fd-muted-foreground)',
+                            backgroundColor: 'transparent',
+                            borderColor: 'var(--color-fd-border)',
+                            borderStyle: 'solid',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            transitionTimingFunction:
+                              'cubic-bezier(0.4, 0, 0.2, 1)',
+                            transitionDuration: '150ms',
+                            transitionProperty:
+                              'color, background-color, border-color',
+                          },
+                          on('&:hover', {
+                            backgroundColor: 'var(--color-fd-accent)',
+                          }),
+                          on(activeCondition, {
+                            color: 'var(--color-fd-accent-foreground)',
+                            backgroundColor: 'var(--color-fd-accent)',
+                          }),
                         )}
+                        type="button"
                       >
                         {tagItem.name}
                       </button>
@@ -568,7 +840,13 @@ function renderHighlights(highlights: HighlightedText<ReactNode>[]) {
   return highlights.map((node, index) => {
     if (node.styles?.highlight) {
       return (
-        <span key={index} {...stylex.props(styles.highlight)}>
+        <span
+          key={index}
+          style={{
+            color: 'var(--color-fd-primary)',
+            textDecorationLine: 'underline',
+          }}
+        >
           {node.content}
         </span>
       );
@@ -576,245 +854,3 @@ function renderHighlights(highlights: HighlightedText<ReactNode>[]) {
     return <Fragment key={index}>{node.content}</Fragment>;
   });
 }
-
-const styles = stylex.create({
-  overlay: {
-    position: 'fixed',
-    inset: 0,
-    zIndex: 50,
-    backgroundColor: vars['--color-fd-overlay'],
-    backdropFilter: 'blur(4px)',
-  },
-  content: {
-    position: 'fixed',
-    top: {
-      default: 4 * 4,
-      '@media (min-width: 768px)': 'calc(50% - 250px)',
-    },
-    left: '50%',
-    zIndex: 51,
-    width: 'calc(100% - 16px)',
-    maxWidth: 640,
-    overflow: 'hidden',
-    color: vars['--color-fd-popover-foreground'],
-    backgroundColor: `color-mix(in oklab, ${vars['--color-fd-popover']} 35%, transparent)`,
-    borderColor: vars['--color-fd-border'],
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: 12,
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    transform: 'translateX(-50%)',
-    animationName: {
-      default: null,
-      ':where([data-state="closed"])': vars['--animate-fd-dialog-out'],
-      ':where([data-state="open"])': vars['--animate-fd-dialog-in'],
-    },
-    animationDuration: '300ms',
-    animationTimingFunction: EASINGS.dialog,
-  },
-  bgBlurContainer: {
-    position: 'absolute',
-    inset: 0,
-    overflow: 'clip',
-  },
-  bgBlur: {
-    position: 'absolute',
-    inset: -64,
-    backdropFilter: 'blur(48px) saturate(400%)',
-  },
-  visuallyHidden: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    padding: 0,
-    margin: -1,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    borderWidth: 0,
-    clip: 'rect(0, 0, 0, 0)',
-  },
-  header: {
-    position: 'relative',
-    display: 'flex',
-    gap: 2 * 4,
-    alignItems: 'center',
-    padding: 3 * 4,
-    borderBottomColor: vars['--color-fd-border'],
-    borderBottomStyle: 'solid',
-    borderBottomWidth: 1,
-  },
-  searchIcon: {
-    width: 20,
-    height: 20,
-    color: vars['--color-fd-muted-foreground'],
-  },
-  searchIconLoading: {
-    animationName: vars['--animate-pulse'],
-    animationDuration: ANIMATION_DURATIONS.pulse,
-    animationTimingFunction: EASINGS.pulse,
-    animationIterationCount: 'infinite',
-  },
-  input: {
-    flexGrow: 1,
-    minWidth: 0,
-    fontSize: `${18 / 16}rem`,
-    color: {
-      default: vars['--color-fd-popover-foreground'],
-      '::placeholder': vars['--color-fd-muted-foreground'],
-    },
-    outline: 'none',
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-  },
-  closeButton: {
-    paddingBlock: 0.5 * 4,
-    paddingInline: 1.5 * 4,
-    fontFamily: 'var(--font-mono)',
-    fontSize: `${12 / 16}rem`,
-    color: {
-      default: vars['--color-fd-muted-foreground'],
-      ':hover': vars['--color-fd-accent-foreground'],
-    },
-    outline: 'none',
-    backgroundColor: {
-      default: vars['--color-fd-background'],
-      ':hover': 'color-mix(in oklab, var(--color-fd-accent) 80%, transparent)',
-    },
-    borderColor: {
-      default: vars['--color-fd-border'],
-      ':focus-visible': vars['--color-fd-primary'],
-      ':hover': vars['--color-fd-primary'],
-    },
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: 6,
-    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    transitionDuration: '150ms',
-    transitionProperty: 'color, background-color, border-color',
-  },
-  listContainer: {
-    position: 'relative',
-    // eslint-disable-next-line @stylexjs/valid-styles
-    ['--fd-animated-height' as any]: '0px',
-    height: 'var(--fd-animated-height)',
-    overflow: 'hidden',
-    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    transitionDuration: '150ms',
-    transitionProperty: 'height',
-  },
-  listViewport: {
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: 460,
-    padding: 1 * 4,
-    overflowY: 'auto',
-  },
-  listViewportHidden: {
-    display: 'none',
-  },
-  emptyState: {
-    paddingBlock: 12 * 4,
-    fontSize: `${14 / 16}rem`,
-    color: vars['--color-fd-muted-foreground'],
-    textAlign: 'center',
-  },
-  itemButton: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0.5 * 4,
-    alignItems: 'flex-start',
-    width: '100%',
-    paddingBlock: 2 * 4,
-    paddingInline: 2.5 * 4,
-    fontSize: `${14 / 16}rem`,
-    color: vars['--color-fd-popover-foreground'],
-    textAlign: 'start',
-    backgroundColor: {
-      default: 'transparent',
-      ':hover': `color-mix(in oklab, ${vars['--color-fd-accent']} 45%, transparent)`,
-    },
-    borderRadius: 8,
-    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    transitionDuration: '150ms',
-    transitionProperty: 'background-color, color',
-  },
-  itemButtonActive: {
-    color: vars['--color-fd-accent-foreground'],
-    backgroundColor: `color-mix(in oklab, ${vars['--color-fd-accent']} 45%, transparent)`,
-  },
-  breadcrumbs: {
-    display: 'inline-flex',
-    gap: 1 * 4,
-    alignItems: 'center',
-    fontSize: `${10 / 16}rem`,
-    color: vars['--color-fd-muted-foreground'],
-  },
-  breadcrumbIcon: {
-    width: 16,
-    height: 16,
-    color: vars['--color-fd-muted-foreground'],
-  },
-  itemContent: {
-    display: 'block',
-    width: '100%',
-    minWidth: 0,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    color: vars['--color-fd-foreground'],
-    whiteSpace: 'nowrap',
-  },
-  itemContentIndented: {},
-  itemContentStrong: {
-    fontWeight: 500,
-  },
-  itemContentMuted: {
-    color: `color-mix(in oklab, ${vars['--color-fd-popover-foreground']} 80%, transparent)`,
-  },
-  hashIcon: {
-    width: 16,
-    height: 16,
-    marginInlineEnd: 1 * 4,
-    color: vars['--color-fd-muted-foreground'],
-  },
-  highlight: {
-    color: vars['--color-fd-primary'],
-    textDecorationLine: 'underline',
-  },
-  footer: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 2 * 4,
-    padding: 3 * 4,
-    backgroundColor: `color-mix(in oklab, ${vars['--color-fd-secondary']} 50%, transparent)`,
-  },
-  tagList: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 1 * 4,
-    alignItems: 'center',
-  },
-  tagButton: {
-    paddingBlock: 0.5 * 4,
-    paddingInline: 2 * 4,
-    fontSize: `${12 / 16}rem`,
-    fontWeight: 500,
-    color: vars['--color-fd-muted-foreground'],
-    backgroundColor: {
-      default: 'transparent',
-      ':hover': vars['--color-fd-accent'],
-    },
-    borderColor: vars['--color-fd-border'],
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: 6,
-    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    transitionDuration: '150ms',
-    transitionProperty: 'color, background-color, border-color',
-  },
-  tagButtonActive: {
-    color: vars['--color-fd-accent-foreground'],
-    backgroundColor: vars['--color-fd-accent'],
-  },
-});

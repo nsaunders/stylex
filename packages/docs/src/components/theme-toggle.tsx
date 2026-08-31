@@ -6,12 +6,11 @@
  */
 'use client';
 
-import type { SVGProps } from 'react';
+import { on, or } from '@/css';
+import type { ComponentProps, SVGProps } from 'react';
 import { useTheme } from 'next-themes';
 import { useLayoutEffect, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
-import { StyleXAttributes } from './layout/shared';
-import { vars } from '@/theming/vars.stylex';
+import { pipe } from 'remeda';
 
 type ThemeKey = 'light' | 'dark' | 'system';
 
@@ -22,10 +21,11 @@ const items: { key: ThemeKey; Icon: typeof SunIcon; label: string }[] = [
 ];
 
 export function ThemeToggle({
-  xstyle,
+  className,
+  style,
   mode = 'light-dark-system',
   ...props
-}: StyleXAttributes<HTMLElement> & {
+}: ComponentProps<'div'> & {
   mode?: 'light-dark' | 'light-dark-system';
 }) {
   const { setTheme, theme, resolvedTheme } = useTheme();
@@ -46,12 +46,33 @@ export function ThemeToggle({
 
   const visibleItems =
     mode === 'light-dark' ? items.filter((i) => i.key !== 'system') : items;
+  const activeClassName = 'a';
+  const active = `&.${activeClassName}` satisfies Parameters<typeof on>[0];
+  const growClassName = 'b';
+  const grow = `&.${growClassName}` satisfies Parameters<typeof on>[0];
 
   return (
     <div
       data-theme-toggle=""
       {...props}
-      {...stylex.props(styles.container, xstyle)}
+      className={className}
+      style={{
+        ...pipe(
+          {
+            display: 'inline-flex',
+            gap: 2,
+            alignItems: 'center',
+            padding: 0.5 * 4,
+            overflow: 'hidden',
+            borderColor: 'var(--color-fd-border)',
+            borderStyle: 'solid',
+            borderWidth: 1,
+            borderRadius: 999,
+          },
+          on('@media (max-width: 420px)', { display: 'none' }),
+        ),
+        ...style,
+      }}
     >
       {visibleItems.map(({ key, Icon, label }) => {
         const isActive = current === key;
@@ -62,16 +83,53 @@ export function ThemeToggle({
         return (
           <button
             aria-label={label}
+            className={
+              [
+                isActive ? activeClassName : undefined,
+                visibleItems.length === 3 ? growClassName : undefined,
+              ]
+                .filter(Boolean)
+                .join(' ') || undefined
+            }
             key={key}
             onClick={() => setTheme(nextTheme)}
-            type="button"
-            {...stylex.props(
-              styles.item,
-              isActive && styles.itemActive,
-              visibleItems.length === 3 && styles.itemGrow,
+            style={pipe(
+              {
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 7 * 4,
+                minHeight: 7 * 4,
+                color: 'var(--color-fd-muted-foreground)',
+                outline: 'none',
+                backgroundColor: 'transparent',
+                borderWidth: 0,
+                borderRadius: 999,
+                boxShadow: 'none',
+                transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                transitionDuration: '150ms',
+                transitionProperty: 'background-color, color, box-shadow',
+              },
+              on(active, {
+                color: 'var(--color-fd-primary)',
+                backgroundColor:
+                  'color-mix(in oklab, var(--color-fd-primary) 12%, var(--color-fd-background))',
+              }),
+              on(grow, { flexGrow: 1, width: 'auto' }),
+              on(or('&:hover', '&:focus-visible'), {
+                color: 'var(--color-fd-foreground)',
+              }),
+              on('&:hover', {
+                backgroundColor:
+                  'color-mix(in oklab, var(--color-fd-primary) 10%, var(--color-fd-background))',
+              }),
+              on('&:focus-visible', {
+                boxShadow: '0 0 0 2px var(--color-fd-primary)',
+              }),
             )}
+            type="button"
           >
-            <Icon {...stylex.props(styles.icon)} />
+            <Icon style={{ width: 16, height: 16 }} />
           </button>
         );
       })}
@@ -140,55 +198,3 @@ function SparklesIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-
-const styles = stylex.create({
-  container: {
-    display: { default: 'inline-flex', '@media (max-width: 420px)': 'none' },
-    gap: 2,
-    alignItems: 'center',
-    padding: 0.5 * 4,
-    overflow: 'hidden',
-    borderColor: vars['--color-fd-border'],
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: 999,
-  },
-  item: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 7 * 4,
-    minHeight: 7 * 4,
-    color: {
-      default: vars['--color-fd-muted-foreground'],
-      ':focus-visible': vars['--color-fd-foreground'],
-      ':hover': vars['--color-fd-foreground'],
-    },
-    outline: 'none',
-    backgroundColor: {
-      default: 'transparent',
-      ':hover': `color-mix(in oklab, ${vars['--color-fd-primary']} 10%, ${vars['--color-fd-background']})`,
-    },
-    borderWidth: 0,
-    borderRadius: 999,
-    boxShadow: {
-      default: 'none',
-      ':focus-visible': `0 0 0 2px ${vars['--color-fd-primary']}`,
-    },
-    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    transitionDuration: '150ms',
-    transitionProperty: 'background-color, color, box-shadow',
-  },
-  itemGrow: {
-    flexGrow: 1,
-    width: 'auto',
-  },
-  itemActive: {
-    color: vars['--color-fd-primary'],
-    backgroundColor: `color-mix(in oklab, ${vars['--color-fd-primary']} 12%, ${vars['--color-fd-background']})`,
-  },
-  icon: {
-    width: 16,
-    height: 16,
-  },
-});

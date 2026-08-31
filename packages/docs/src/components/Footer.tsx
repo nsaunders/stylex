@@ -6,12 +6,12 @@
  */
 
 import * as React from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { GithubIcon, TwitterIcon } from 'lucide-react';
+import { pipe } from 'remeda';
 import Bluesky from './icons/Bluesky';
 import MetaOpenSource from './icons/MetaOpenSource';
 import Link from 'fumadocs-core/link';
-import { vars } from '@/theming/vars.stylex';
+import { on, or } from '@/css';
 
 function ExternalLinkIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -68,18 +68,95 @@ export default function Footer({
 }: {
   noBorderTop?: boolean;
 }) {
+  const borderedClassName = 'a';
+  const bordered = `&.${borderedClassName}` satisfies Parameters<typeof on>[0];
+  const externalClassName = 'b';
+  const external = `&.${externalClassName}` satisfies Parameters<typeof on>[0];
+
   return (
     <footer
-      {...stylex.props(styles.footer, noBorderTop && styles.footerNoBorder)}
+      className={noBorderTop ? undefined : borderedClassName}
+      style={pipe(
+        {
+          backgroundColor: 'var(--color-fd-background)',
+          transitionDuration: '300ms',
+          transitionProperty: 'background-color, border-color',
+        },
+        on(bordered, {
+          borderTopColor: 'var(--color-fd-border)',
+          borderTopStyle: 'solid',
+          borderTopWidth: 1,
+        }),
+      )}
     >
-      <div {...stylex.props(styles.container)}>
-        <div {...stylex.props(styles.grid)}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 32,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          paddingTop: 48,
+          paddingRight: 32,
+          paddingBottom: 32,
+          paddingLeft: 32,
+        }}
+      >
+        <div
+          style={pipe(
+            {
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 32,
+              width: '100%',
+              maxWidth: 1280,
+            },
+            on('@media (min-width: 768px)', {
+              gridTemplateColumns: 'repeat(4, 1fr)',
+            }),
+          )}
+        >
           <div>
-            <h4 {...stylex.props(styles.heading)}>Develop</h4>
-            <ul {...stylex.props(styles.list)}>
+            <h4
+              style={{
+                marginBottom: 16,
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: 'var(--color-fd-foreground)',
+                textAlign: 'center',
+              }}
+            >
+              Develop
+            </h4>
+            <ul
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                alignItems: 'center',
+                padding: 0,
+                margin: 0,
+                listStyle: 'none',
+              }}
+            >
               {footerLinks.develop.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} {...stylex.props(styles.link)}>
+                  <Link
+                    href={link.href}
+                    style={pipe(
+                      {
+                        fontSize: '0.875rem',
+                        color: 'var(--color-fd-muted-foreground)',
+                        textDecoration: 'none',
+                        transitionDuration: '150ms',
+                        transitionProperty: 'color',
+                      },
+                      on('&:hover', {
+                        color: 'var(--color-fd-foreground)',
+                      }),
+                    )}
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -88,11 +165,45 @@ export default function Footer({
           </div>
 
           <div>
-            <h4 {...stylex.props(styles.heading)}>Explore</h4>
-            <ul {...stylex.props(styles.list)}>
+            <h4
+              style={{
+                marginBottom: 16,
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: 'var(--color-fd-foreground)',
+                textAlign: 'center',
+              }}
+            >
+              Explore
+            </h4>
+            <ul
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                alignItems: 'center',
+                padding: 0,
+                margin: 0,
+                listStyle: 'none',
+              }}
+            >
               {footerLinks.explore.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} {...stylex.props(styles.link)}>
+                  <Link
+                    href={link.href}
+                    style={pipe(
+                      {
+                        fontSize: '0.875rem',
+                        color: 'var(--color-fd-muted-foreground)',
+                        textDecoration: 'none',
+                        transitionDuration: '150ms',
+                        transitionProperty: 'color',
+                      },
+                      on('&:hover', {
+                        color: 'var(--color-fd-foreground)',
+                      }),
+                    )}
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -101,15 +212,49 @@ export default function Footer({
           </div>
 
           <div>
-            <h4 {...stylex.props(styles.heading)}>Participate</h4>
-            <ul {...stylex.props(styles.list)}>
+            <h4
+              style={{
+                marginBottom: 16,
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: 'var(--color-fd-foreground)',
+                textAlign: 'center',
+              }}
+            >
+              Participate
+            </h4>
+            <ul
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                alignItems: 'center',
+                padding: 0,
+                margin: 0,
+                listStyle: 'none',
+              }}
+            >
               {footerLinks.participate.map((link) => (
                 <li key={link.label}>
                   <Link
+                    className={link.external ? externalClassName : undefined}
                     href={link.href}
-                    {...stylex.props(
-                      styles.link,
-                      link.external && styles.externalLink,
+                    style={pipe(
+                      {
+                        fontSize: '0.875rem',
+                        color: 'var(--color-fd-muted-foreground)',
+                        textDecoration: 'none',
+                        transitionDuration: '150ms',
+                        transitionProperty: 'color',
+                      },
+                      on(external, {
+                        display: 'inline-flex',
+                        gap: 4,
+                        alignItems: 'center',
+                      }),
+                      on('&:hover', {
+                        color: 'var(--color-fd-foreground)',
+                      }),
                     )}
                     {...(link.external
                       ? { target: '_blank', rel: 'noopener noreferrer' }
@@ -117,9 +262,7 @@ export default function Footer({
                   >
                     {link.label}
                     {link.external && (
-                      <ExternalLinkIcon
-                        {...stylex.props(styles.externalIcon)}
-                      />
+                      <ExternalLinkIcon style={{ width: 12, height: 12 }} />
                     )}
                   </Link>
                 </li>
@@ -128,15 +271,49 @@ export default function Footer({
           </div>
 
           <div>
-            <h4 {...stylex.props(styles.heading)}>Legal</h4>
-            <ul {...stylex.props(styles.list)}>
+            <h4
+              style={{
+                marginBottom: 16,
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: 'var(--color-fd-foreground)',
+                textAlign: 'center',
+              }}
+            >
+              Legal
+            </h4>
+            <ul
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                alignItems: 'center',
+                padding: 0,
+                margin: 0,
+                listStyle: 'none',
+              }}
+            >
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
                   <Link
+                    className={link.external ? externalClassName : undefined}
                     href={link.href}
-                    {...stylex.props(
-                      styles.link,
-                      link.external && styles.externalLink,
+                    style={pipe(
+                      {
+                        fontSize: '0.875rem',
+                        color: 'var(--color-fd-muted-foreground)',
+                        textDecoration: 'none',
+                        transitionDuration: '150ms',
+                        transitionProperty: 'color',
+                      },
+                      on(external, {
+                        display: 'inline-flex',
+                        gap: 4,
+                        alignItems: 'center',
+                      }),
+                      on('&:hover', {
+                        color: 'var(--color-fd-foreground)',
+                      }),
                     )}
                     {...(link.external
                       ? { target: '_blank', rel: 'noopener noreferrer' }
@@ -144,9 +321,7 @@ export default function Footer({
                   >
                     {link.label}
                     {link.external && (
-                      <ExternalLinkIcon
-                        {...stylex.props(styles.externalIcon)}
-                      />
+                      <ExternalLinkIcon style={{ width: 12, height: 12 }} />
                     )}
                   </Link>
                 </li>
@@ -158,43 +333,99 @@ export default function Footer({
         <Link
           href="https://opensource.fb.com"
           rel="noopener noreferrer"
+          style={pipe(
+            {
+              marginTop: 16,
+              opacity: 0.5,
+              transitionTimingFunction: 'ease-in-out',
+              transitionDuration: '150ms',
+              transitionProperty: 'opacity',
+            },
+            on(or('&:focus-visible', '&:hover'), {
+              opacity: 1,
+            }),
+          )}
           target="_blank"
-          {...stylex.props(styles.metaOpenSourceLink)}
         >
-          <MetaOpenSource xstyle={styles.metaOpenSource} />
+          <MetaOpenSource style={{ height: 68 }} />
         </Link>
 
-        <div {...stylex.props(styles.bottom)}>
-          <span {...stylex.props(styles.copyright)}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 8,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            maxWidth: 1080,
+          }}
+        >
+          <span
+            style={{
+              fontSize: '0.875rem',
+              color: 'var(--color-fd-muted-foreground)',
+            }}
+          >
             Copyright © {new Date().getFullYear()} Meta Platforms, Inc.
           </span>
 
-          <div {...stylex.props(styles.bottomSpacer)} />
+          <div style={{ flexGrow: 1, minWidth: 32 }} />
 
-          <div {...stylex.props(styles.socialLinks)}>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             <Link
               href="https://github.com/facebook/stylex"
               rel="noopener noreferrer"
+              style={pipe(
+                {
+                  padding: 8,
+                  color: 'var(--color-fd-muted-foreground)',
+                  transitionDuration: '150ms',
+                  transitionProperty: 'color',
+                },
+                on('&:hover', {
+                  color: 'var(--color-fd-foreground)',
+                }),
+              )}
               target="_blank"
-              {...stylex.props(styles.socialLink)}
             >
-              <GithubIcon {...stylex.props(styles.socialIcon)} />
+              <GithubIcon style={{ width: 20, height: 20 }} />
             </Link>
             <Link
               href="https://x.com/stylexjs"
               rel="noopener noreferrer"
+              style={pipe(
+                {
+                  padding: 8,
+                  color: 'var(--color-fd-muted-foreground)',
+                  transitionDuration: '150ms',
+                  transitionProperty: 'color',
+                },
+                on('&:hover', {
+                  color: 'var(--color-fd-foreground)',
+                }),
+              )}
               target="_blank"
-              {...stylex.props(styles.socialLink)}
             >
-              <TwitterIcon {...stylex.props(styles.socialIcon)} />
+              <TwitterIcon style={{ width: 20, height: 20 }} />
             </Link>
             <Link
               href="https://bsky.app/profile/stylexjs.bsky.social"
               rel="noopener noreferrer"
+              style={pipe(
+                {
+                  padding: 8,
+                  color: 'var(--color-fd-muted-foreground)',
+                  transitionDuration: '150ms',
+                  transitionProperty: 'color',
+                },
+                on('&:hover', {
+                  color: 'var(--color-fd-foreground)',
+                }),
+              )}
               target="_blank"
-              {...stylex.props(styles.socialLink)}
             >
-              <Bluesky xstyle={styles.socialIcon} />
+              <Bluesky style={{ width: 20, height: 20 }} />
             </Link>
           </div>
         </div>
@@ -202,124 +433,3 @@ export default function Footer({
     </footer>
   );
 }
-
-const styles = stylex.create({
-  footer: {
-    backgroundColor: vars['--color-fd-background'],
-    borderTopColor: vars['--color-fd-border'],
-    borderTopStyle: 'solid',
-    borderTopWidth: 1,
-    transitionDuration: '300ms',
-    transitionProperty: 'background-color, border-color',
-  },
-  footerNoBorder: {
-    borderTopColor: null,
-    borderTopStyle: null,
-    borderTopWidth: null,
-  },
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    padding: 32,
-    paddingTop: 48,
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: {
-      default: 'repeat(2, 1fr)',
-      '@media (min-width: 768px)': 'repeat(4, 1fr)',
-    },
-    gap: 32,
-    width: '100%',
-    maxWidth: 1280,
-  },
-  heading: {
-    marginBottom: 16,
-    fontSize: '0.875rem',
-    fontWeight: 600,
-    color: vars['--color-fd-foreground'],
-    textAlign: 'center',
-  },
-  list: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-    alignItems: 'center',
-    padding: 0,
-    margin: 0,
-    listStyle: 'none',
-  },
-  link: {
-    fontSize: '0.875rem',
-    color: {
-      default: vars['--color-fd-muted-foreground'],
-      ':hover': vars['--color-fd-foreground'],
-    },
-    textDecoration: 'none',
-    transitionDuration: '150ms',
-    transitionProperty: 'color',
-  },
-  externalLink: {
-    display: 'inline-flex',
-    gap: 4,
-    alignItems: 'center',
-  },
-  externalIcon: {
-    width: 12,
-    height: 12,
-  },
-  bottom: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    // justifyContent: 'space-between',
-    width: '100%',
-    maxWidth: 1080,
-  },
-  bottomSpacer: {
-    flexGrow: 1,
-    minWidth: 32,
-  },
-  metaOpenSourceLink: {
-    marginTop: 16,
-    opacity: {
-      default: 0.5,
-      ':focus-visible': 1,
-      ':hover': 1,
-    },
-    transitionTimingFunction: 'ease-in-out',
-    transitionDuration: '150ms',
-    transitionProperty: 'opacity',
-  },
-  metaOpenSource: {
-    height: 68,
-  },
-  copyright: {
-    fontSize: '0.875rem',
-    color: vars['--color-fd-muted-foreground'],
-  },
-  socialLinks: {
-    display: 'flex',
-    gap: 16,
-    alignItems: 'center',
-  },
-  socialLink: {
-    padding: 8,
-    color: {
-      default: vars['--color-fd-muted-foreground'],
-      ':hover': vars['--color-fd-foreground'],
-    },
-    transitionDuration: '150ms',
-    transitionProperty: 'color',
-  },
-  socialIcon: {
-    width: 20,
-    height: 20,
-  },
-});

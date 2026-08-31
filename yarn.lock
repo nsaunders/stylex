@@ -1610,6 +1610,18 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
+"@css-hooks/core@4.0.0-next.4":
+  version "4.0.0-next.4"
+  resolved "https://registry.yarnpkg.com/@css-hooks/core/-/core-4.0.0-next.4.tgz#c67665cbaa1898083c8b3ebf9e2070beb159e6cd"
+  integrity sha512-DHp70ow37SlZS1vD/N1onWyJR+T2if+UwYRyZi+AJRyVUVstrCsdfkNrEt5OAqxy7ZQaw4KU8XrlpptSz4aEig==
+
+"@css-hooks/react@^4.0.0-next.4":
+  version "4.0.0-next.4"
+  resolved "https://registry.yarnpkg.com/@css-hooks/react/-/react-4.0.0-next.4.tgz#36c7b2b94ab1fd12dc4ecd16415bf5fa9f1b2c2c"
+  integrity sha512-1apFma7NmSbwiMNxL8Fd+5rJMrjnzo4YRQtFGcqGzKXBxIiX6fMi33UpEfriB0Y+XKHqgf6T9NrMqzvl+ASypg==
+  dependencies:
+    "@css-hooks/core" "4.0.0-next.4"
+
 "@csstools/color-helpers@^5.1.0":
   version "5.1.0"
   resolved "https://registry.npmjs.org/@csstools/color-helpers/-/color-helpers-5.1.0.tgz"
@@ -14514,6 +14526,11 @@ relateurl@^0.2.7:
   version "0.2.7"
   resolved "https://registry.npmjs.org/relateurl/-/relateurl-0.2.7.tgz"
   integrity sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==
+
+remeda@^2.45.0:
+  version "2.45.0"
+  resolved "https://registry.yarnpkg.com/remeda/-/remeda-2.45.0.tgz#3d30e9a8bec6793165ed153e3e80c72aa5ba21c2"
+  integrity sha512-CTftZ0GJSox3CH77OhJemj20sXXUScH/kpkExD6t2LP3IG+mPKASBMFkbvWtsvzhU+54gKcgH38WWVihfr7bCA==
 
 remark-directive@^4.0.0:
   version "4.0.0"

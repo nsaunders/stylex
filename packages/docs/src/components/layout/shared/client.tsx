@@ -9,15 +9,16 @@
 import { usePathname } from 'fumadocs-core/framework';
 import { isActive } from '../../../lib/is-active';
 import Link from 'fumadocs-core/link';
-import type { BaseLinkType, StyleXComponentProps } from './index';
-import * as stylex from '@stylexjs/stylex';
+import type { BaseLinkType } from './index';
+import type { ComponentProps } from 'react';
 
 export function BaseLinkItem({
   ref,
   item,
-  xstyle,
+  className,
+  style,
   ...props
-}: Omit<StyleXComponentProps<'a'>, 'href'> & { item: BaseLinkType }) {
+}: Omit<ComponentProps<'a'>, 'href'> & { item: BaseLinkType }) {
   const pathname = usePathname();
   const activeType = item.active ?? 'url';
   const active =
@@ -30,8 +31,9 @@ export function BaseLinkItem({
       href={item.url}
       ref={ref}
       {...props}
-      {...stylex.props(xstyle)}
+      className={className}
       data-active={active}
+      style={style}
     >
       {props.children}
     </Link>

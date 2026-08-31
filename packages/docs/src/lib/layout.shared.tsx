@@ -1,13 +1,16 @@
 import type { BaseLayoutProps } from '@/components/layout/shared';
-import * as stylex from '@stylexjs/stylex';
 import LogoBold from '@/components/LogoBold';
-import { vars } from '../theming/vars.stylex';
 
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: (
-        <LogoBold xstyle={styles.logo} />
+        <LogoBold
+          style={{
+            ...{ '--fg1': 'var(--color-fd-card-foreground)' },
+            height: 36,
+          }}
+        />
       ),
     },
     githubUrl: 'https://github.com/facebook/stylex',
@@ -16,34 +19,26 @@ export function baseOptions(): BaseLayoutProps {
         type: 'main',
         text: 'Docs',
         url: '/docs/learn',
-        active: 'nested-url'
+        active: 'nested-url',
       },
       {
         type: 'main',
         text: 'API',
         url: '/docs/api',
-        active: 'nested-url'
+        active: 'nested-url',
       },
       {
         type: 'main',
         text: 'Blog',
         url: '/blog',
-        active: 'nested-url'
+        active: 'nested-url',
       },
       {
         type: 'main',
         text: 'Playground',
         url: '/playground',
-        active: 'nested-url'
+        active: 'nested-url',
       },
     ],
   };
 }
-
-const styles = stylex.create({
-  logo: {
-    '--fg1': vars['--color-fd-card-foreground'],
-    // width: 48,
-    height: 36,
-  },
-});

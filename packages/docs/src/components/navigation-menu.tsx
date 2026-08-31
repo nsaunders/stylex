@@ -7,93 +7,82 @@
 'use client';
 
 import * as Primitive from '@radix-ui/react-navigation-menu';
-import { StyleXComponentProps } from './layout/shared';
-import * as stylex from '@stylexjs/stylex';
-import { vars } from '@/theming/vars.stylex';
+import { on, pseudoElementProperty } from '@/css';
+import type { ComponentProps } from 'react';
+import { pipe } from 'remeda';
 
 const NavigationMenu = Primitive.Root;
 
 const NavigationMenuList = Primitive.List;
 
-const commonStyles = stylex.create({
-  listNone: {
-    listStyleType: 'none',
-  },
-  accent50: {
-    backgroundColor: {
-      default: null,
-      ':where([data-state=open])': `color-mix(in oklab, ${vars['--color-fd-accent']} 50%, transparent)`,
-    },
-  },
-  menuContent: {
-    position: 'absolute',
-    insetInline: 0,
-    top: 0,
-    maxHeight: '80svh',
-    overflow: 'auto',
-    '::-webkit-scrollbar': { width: 5, height: 5 },
-    '::-webkit-scrollbar-corner': { display: 'none' },
-    '::-webkit-scrollbar-thumb': {
-      backgroundColor: vars['--color-fd-border'],
-      borderRadius: 5,
-    },
-    '::-webkit-scrollbar-track': { backgroundColor: 'transparent' },
-  },
-  menuViewport: {
-    position: 'relative',
-    width: '100%',
-    height: 'var(--radix-navigation-menu-viewport-height)',
-    overflow: 'hidden',
-    transformOrigin: 'top center',
-    transitionDuration: '300ms',
-    transitionProperty: 'width, height',
-  },
-  menuViewportContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-  },
-});
-
 const NavigationMenuItem = ({
-  xstyle,
+  className,
+  style,
   children,
   ref,
   ...props
-}: StyleXComponentProps<typeof Primitive.NavigationMenuItem>) => (
+}: ComponentProps<typeof Primitive.NavigationMenuItem>) => (
   <Primitive.NavigationMenuItem
     ref={ref}
     {...props}
-    {...stylex.props(commonStyles.listNone, xstyle)}
+    className={className}
+    style={{ listStyleType: 'none', ...style }}
   >
     {children}
   </Primitive.NavigationMenuItem>
 );
 
 const NavigationMenuTrigger = ({
-  xstyle,
+  className,
+  style,
   children,
   ref,
   ...props
-}: StyleXComponentProps<typeof Primitive.Trigger>) => (
+}: ComponentProps<typeof Primitive.Trigger>) => (
   <Primitive.Trigger
     ref={ref}
-    {...stylex.props(commonStyles.accent50, xstyle)}
     {...props}
+    className={className}
+    style={{
+      ...pipe(
+        {},
+        on('&:where([data-state=open])', {
+          backgroundColor:
+            'color-mix(in oklab, var(--color-fd-accent) 50%, transparent)',
+        }),
+      ),
+      ...style,
+    }}
   >
     {children}
   </Primitive.Trigger>
 );
 
 const NavigationMenuContent = ({
-  xstyle,
+  className,
+  style,
   ref,
   ...props
-}: StyleXComponentProps<typeof Primitive.Content>) => (
+}: ComponentProps<typeof Primitive.Content>) => (
   <Primitive.Content
     ref={ref}
     {...props}
-    {...stylex.props(commonStyles.menuContent, xstyle)}
+    className={className}
+    data-navigation-menu-content=""
+    style={{
+      [pseudoElementProperty("-webkit-scrollbar", "width")]: "5px",
+      [pseudoElementProperty("-webkit-scrollbar", "height")]: "5px",
+      [pseudoElementProperty("-webkit-scrollbar-corner", "display")]: "none",
+      [pseudoElementProperty("-webkit-scrollbar-thumb", "background-color")]: "var(--color-fd-border)",
+      [pseudoElementProperty("-webkit-scrollbar-thumb", "border-radius")]: "5px",
+      [pseudoElementProperty("-webkit-scrollbar-track", "background-color")]: "transparent",
+      position: 'absolute',
+      insetInline: 0,
+      top: 0,
+      maxHeight: '80svh',
+      overflow: 'auto',
+      ...style,
+    }}
   />
 );
 NavigationMenuContent.displayName = Primitive.Content.displayName;
@@ -101,14 +90,32 @@ NavigationMenuContent.displayName = Primitive.Content.displayName;
 const NavigationMenuLink = Primitive.Link;
 
 const NavigationMenuViewport = ({
-  xstyle,
+  className,
+  style,
   ref,
   ...props
-}: StyleXComponentProps<typeof Primitive.Viewport>) => (
-  <div ref={ref} {...stylex.props(commonStyles.menuViewportContainer)}>
+}: ComponentProps<typeof Primitive.Viewport>) => (
+  <div
+    ref={ref}
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      width: '100%',
+    }}
+  >
     <Primitive.Viewport
       {...props}
-      {...stylex.props(commonStyles.menuViewport, xstyle)}
+      className={className}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: 'var(--radix-navigation-menu-viewport-height)',
+        overflow: 'hidden',
+        transformOrigin: 'top center',
+        transitionDuration: '300ms',
+        transitionProperty: 'width, height',
+        ...style,
+      }}
     />
   </div>
 );

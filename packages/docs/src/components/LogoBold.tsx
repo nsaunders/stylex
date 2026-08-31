@@ -7,14 +7,16 @@
  * @format
  */
 
-import * as stylex from '@stylexjs/stylex';
-import { useId } from 'react';
+import { type SVGProps, useId } from 'react';
 
-export default function LogoBold({ xstyle }: { xstyle?: stylex.StyleXStyles }) {
+export default function LogoBold({
+  className,
+  style,
+}: Pick<SVGProps<SVGSVGElement>, 'className' | 'style'>) {
   const id = useId();
 
   return (
-    <svg {...stylex.props(xstyle)} viewBox="0 0 644 435">
+    <svg className={className} style={{ ...style }} viewBox="0 0 644 435">
       <defs>
         <linearGradient
           id={`${id}-a`}
