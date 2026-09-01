@@ -54,12 +54,29 @@ const VERSION_SKEW_RECOVERY_SCRIPT = `
 export default function RootElement({ children }: { children: ReactNode }) {
   return (
     <SiteErrorBoundary>
-      <html lang="en">
+      <html
+        lang="en"
+        style={{
+          lineHeight: 1.5,
+          WebkitTextSizeAdjust: '100%',
+          fontFamily: 'var(--font-sans)',
+          WebkitTapHighlightColor: 'transparent',
+        }}
+      >
         <head>
           <style dangerouslySetInnerHTML={{ __html: styleSheet() }} />
           <script>{VERSION_SKEW_RECOVERY_SCRIPT}</script>
         </head>
-        <body>{children}</body>
+        <body
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+            backgroundColor: 'var(--color-fd-background)',
+          }}
+        >
+          {children}
+        </body>
       </html>
     </SiteErrorBoundary>
   );

@@ -84,34 +84,11 @@ const additionalStyleSheet = String.raw`
 }
 
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
+  * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     border-width: 0;
-    border-style: solid;
-  }
-
-  html,
-  :host {
-    line-height: 1.5;
-    -webkit-text-size-adjust: 100%;
-    tab-size: 4;
-    font-family: var(--font-sans);
-    font-feature-settings: var(--default-font-feature-settings, normal);
-    font-variation-settings: var(--default-font-variation-settings, normal);
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--color-fd-background);
   }
 
   a {
