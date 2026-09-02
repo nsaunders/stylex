@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "postinstall": "npm run build",
+    "postinstall": "patch-package && npm run build",
     "prepare": "husky install tools/husky",
     "build": "npm run build --workspaces --if-present",
     "build:examples": "npm run example:build --workspaces --if-present",
@@ -46,6 +46,7 @@
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "lint-staged": "^13.0.3",
+    "patch-package": "^8.0.1",
     "prettier": "3.5.3",
     "prettier-plugin-hermes-parser": "^0.36.1",
     "shx": "^0.4.0",
