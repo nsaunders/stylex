@@ -2,22 +2,13 @@ diff --git a/node_modules/waku/dist/lib/utils/managed.js b/node_modules/waku/dis
 index a43ada1..866f50e 100644
 --- a/node_modules/waku/dist/lib/utils/managed.js
 +++ b/node_modules/waku/dist/lib/utils/managed.js
-@@ -22,14 +22,16 @@ export default adapter(
- };
- export const getManagedClientEntry = ()=>{
-     return `
+@@ -25 +25 @@ export const getManagedClientEntry = ()=>{
 -import { StrictMode, createElement } from 'react';
 +import { StrictMode, createElement, startTransition } from 'react';
- import { createRoot, hydrateRoot } from 'react-dom/client';
- import { Router } from 'waku/router/client';
- 
- const rootElement = createElement(StrictMode, null, createElement(Router));
- 
+@@ -31,3 +31,5 @@ const rootElement = createElement(StrictMode, null, createElement(Router));
  if (globalThis.__WAKU_HYDRATE__) {
 -  hydrateRoot(document, rootElement);
 +  startTransition(() => {
 +    hydrateRoot(document, rootElement);
 +  });
  } else {
-   createRoot(document).render(rootElement);
- }
