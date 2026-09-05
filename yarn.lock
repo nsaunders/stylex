@@ -1610,17 +1610,17 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@css-hooks/core@4.0.0-next.7":
-  version "4.0.0-next.7"
-  resolved "https://registry.yarnpkg.com/@css-hooks/core/-/core-4.0.0-next.7.tgz#f39f65f7b9f5962032333ee3deb43d1d77ccdac7"
-  integrity sha512-ythBZ+9/nsxfC89iyYaSnui8l5s559f8duAeXjEA9nazLqF83PanLQOPN+3tJu3JjOLOq5dx3ITRnQtxLBHPcA==
+"@css-hooks/core@4.0.0-next.15":
+  version "4.0.0-next.15"
+  resolved "https://registry.npmjs.org/@css-hooks/core/-/core-4.0.0-next.15.tgz#5aceccff79d8a64b434b1508cd3821d77be8177a"
+  integrity sha512-CFqlUwOhhKpGUVakekmXSg0V9SNpMRaMTmHaZb3Q1biW4ptMiMjTSPHiEtq2QQHsuvIQcTzX34HpPFJPSGaEqw==
 
-"@css-hooks/react@^4.0.0-next.7":
-  version "4.0.0-next.7"
-  resolved "https://registry.yarnpkg.com/@css-hooks/react/-/react-4.0.0-next.7.tgz#7e2935e3f097e85863dcc55f1fbbcb3a54168254"
-  integrity sha512-5KALOg7i2tkP94P9mVxCSmjMu/r+UGT4X0W7a6ey3Tz55QjnQjsLEsspXTpQC8zsyI9SnGIK+iUTK5Vgqxmm0A==
+"@css-hooks/react@^4.0.0-next.15":
+  version "4.0.0-next.15"
+  resolved "https://registry.npmjs.org/@css-hooks/react/-/react-4.0.0-next.15.tgz#99c2322db62cc9a971a0828490dd5d9b6cd019cd"
+  integrity sha512-M1Z4cahelDezbhGzv8CK4D0uiEWAmYbdfHb3hxYcqc1p+oIed+wiC5XQ+fiXGew1p1A+T1FFbmce8FGDBfvIfw==
   dependencies:
-    "@css-hooks/core" "4.0.0-next.7"
+    "@css-hooks/core" "4.0.0-next.15"
 
 "@csstools/color-helpers@^5.1.0":
   version "5.1.0"
